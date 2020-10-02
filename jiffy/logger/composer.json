@@ -1,0 +1,21 @@
+{
+  "name": "jiffy/logger",
+  "description": "Simple PSR-3 Based Logger",
+  "type": "library",
+  "require": {
+    "php": ">=7.4.0",
+    "psr/log": "^1.1"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Pragnesh",
+      "email": "pragnesh@jiffystacks.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Jiffy\\Logger\\": "src/"
+    }
+  }
+}
