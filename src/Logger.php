@@ -83,8 +83,7 @@ class Logger extends AbstractLogger
                 $val = $val->getMessage() . ' ' . $val->getFile() . ':' . $val->getLine();
             }
 
-            // todo - sanitize input before writing to file?
-            $replace['{' . $key . '}'] = $val;
+            $replace['{' . $key . '}'] = filter_var($val, FILTER_SANITIZE_STRING);
         }
 
         // interpolate replacement values into the message and return
