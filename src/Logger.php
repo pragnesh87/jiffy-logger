@@ -12,7 +12,7 @@ class Logger extends AbstractLogger
 {
     protected string $name;
     protected DateTimeZone $timezone;
-    protected string $logDir = __DIR__;
+    public string $logDir = __DIR__;
     protected string $message_type;
 
     protected const OS_LOGGING = 0; // Operating System's system logging mechanism
