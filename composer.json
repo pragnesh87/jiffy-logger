@@ -23,7 +23,5 @@
     "psr-4": {
       "Jiffy\\Logger\\": "src/"
     }
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+  }
 }
