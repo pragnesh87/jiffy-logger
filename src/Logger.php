@@ -6,7 +6,7 @@ namespace Jiffy\Logger;
 use DateTimeZone;
 use DateTime;
 use Psr\Log\AbstractLogger;
-
+use Exception;
 
 class Logger extends AbstractLogger
 {
@@ -22,6 +22,7 @@ class Logger extends AbstractLogger
     protected const SAPI_LOGGING = 4; // Message is sent directly to the SAPI logging handler.
 
     protected string $log_channel = 'daily'; //option daily/stacked
+    protected array $allowed_log_channel = ['daily', 'stacked'];
 
     public function __construct(string $name, ?DateTimeZone $timezone = null, $msg_type = self::DESTFILE_LOGGING)
     {
@@ -31,23 +32,21 @@ class Logger extends AbstractLogger
     }
 
     /**
-     * Set Log Channel
-     * 
-     * @param stirng $type
+     * Set Default LogChannel
+     *
+     * @param string $type
      * @return void
      */
     public function setLogChannel(string $type)
     {
+        if (!in_array($type, $this->allowed_log_channel)) {
+            throw new Exception("Invalid Channel Type, allowed daily or stacked");
+        }
         $this->log_channel = $type;
     }
 
     /**
-     * Logs with an arbitrary level.
-     *
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
-     * @return void
+     * @inheritDoc
      */
     public function log($level, $message, array $context = array())
     {
@@ -64,8 +63,8 @@ class Logger extends AbstractLogger
     /**
      * interpolate
      *
-     * @param  mixed $message
-     * @param  mixed $context
+     * @param  string $message
+     * @param  array $context
      * @return void
      */
     protected function interpolate($message, array $context = [])
@@ -88,18 +87,17 @@ class Logger extends AbstractLogger
             $replace['{' . $key . '}'] = $val;
         }
 
-        // Add special placeholders
-        $replace['{post_vars}'] = '$_POST: ' . print_r($_POST, true);
-        $replace['{get_vars}']  = '$_GET: ' . print_r($_GET, true);
-
-        if (isset($_SESSION)) {
-            $replace['{session_vars}'] = '$_SESSION: ' . print_r($_SESSION, true);
-        }
-
         // interpolate replacement values into the message and return
         return strtr($message, $replace);
     }
 
+    /**
+     * Write Error Log
+     *
+     * @param  mixed $logLevel
+     * @param  string $message
+     * @return void
+     */
     public function writeLog($logLevel, $message)
     {
         $date = new DateTime('now', $this->timezone);
@@ -109,7 +107,7 @@ class Logger extends AbstractLogger
             $path = $this->logDir . '/' . date('Y-m-d') . '.log';
             error_log($logStr, $this->message_type, $path);
         } else {
-            $path = $this->logDir . '/' . 'logs.log';
+            $path = $this->logDir . '/' . $this->name . '.log';
             error_log($logStr, $this->message_type, $path);
         }
     }
