@@ -12,7 +12,7 @@ class Logger extends AbstractLogger
 {
     protected string $name;
     protected DateTimeZone $timezone;
-    public string $logDir = __DIR__;
+    protected string $logDir;
     protected string $message_type;
 
     protected const OS_LOGGING = 0; // Operating System's system logging mechanism
@@ -24,11 +24,12 @@ class Logger extends AbstractLogger
     protected string $log_channel = 'daily'; //option daily/stacked
     protected array $allowed_log_channel = ['daily', 'stacked'];
 
-    public function __construct(string $name, ?DateTimeZone $timezone = null, $msg_type = self::DESTFILE_LOGGING)
+    public function __construct(string $name, $logPath, ?DateTimeZone $timezone = null, $msg_type = self::DESTFILE_LOGGING)
     {
         $this->name = $name;
         $this->timezone = $timezone ?: new DateTimeZone(date_default_timezone_get() ?: 'UTC');
         $this->message_type = $msg_type;
+        $this->logDir = $logPath;
     }
 
     /**
@@ -40,7 +41,7 @@ class Logger extends AbstractLogger
     public function setLogChannel(string $type)
     {
         if (!in_array($type, $this->allowed_log_channel)) {
-            throw new Exception("Invalid Channel Type, allowed daily or stacked");
+            throw new Exception("Invalid Channel Type, allowed 'daily' or 'stacked'");
         }
         $this->log_channel = $type;
     }
